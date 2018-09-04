@@ -26,6 +26,7 @@ class Location extends React.Component {
           lat: position.coords.latitude,
           long: position.coords.longitude
         });
+        this.props.setLatLong({ lat: position.coords.latitude, long: position.coords.longitude });
       },
       error => {
         alert(error.message);
@@ -40,40 +41,7 @@ class Location extends React.Component {
     return this.props.children(this.state);
   }
 }
-class PlayAlert extends React.Component {
-  constructor(props) {
-    super(props);
-    Sound.setCategory("Playback", true); // true = mixWithOthers
-    this.whoosh = new Sound("beep.mp3", Sound.MAIN_BUNDLE, error => {
-      if (error) {
-        console.log("failed to load the sound", error);
-        return;
-      }
-      console.log();
-    });
-    this.whoosh.setNumberOfLoops(-1);
-  }
 
-  componentWillUnmount = () => {
-    this.whoosh.release();
-  };
-  play = () => {
-    this.whoosh.play(success => {
-      if (success) {
-        console.log("successfully finished playing");
-      } else {
-        console.log("playback failed due to audio decoding errors");
-        this.whoosh.reset();
-      }
-    });
-  };
-  stop = () => {
-    this.whoosh.stop();
-  };
-  render = () => {
-    return this.props.children({ play: this.play, stop: this.stop });
-  };
-}
 class HomeScreen extends React.Component {
   static navigationOptions = {
     title: "Emergency Alert System",
@@ -85,27 +53,7 @@ class HomeScreen extends React.Component {
       fontWeight: "bold"
     }
   };
-  sendMessage = async () => {
-    try {
-      const value = await AsyncStorage.getItem("phoneNumber");
-      if (value !== null) {
-        SmsAndroid.sms(
-          value, // phone number to send sms to
-          "This is the sms text", // sms body
-          "sendDirect", // sendDirect or sendIndirect
-          (err, message) => {
-            if (err) {
-              alert("Failed to send message");
-            } else {
-              alert("Successfully send message"); // callback message
-            }
-          }
-        );
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+
   render() {
     return (
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
@@ -336,12 +284,15 @@ class PatternScreen extends React.Component {
   };
 
   sendMessage = async () => {
+    console.warn(
+      `In danger , location : ${this.state.lat},${this.state.long} , time: ${new Date()}` // sms body
+    );
     try {
       const value = await AsyncStorage.getItem("phoneNumber");
       if (value !== null) {
         SmsAndroid.sms(
           value, // phone number to send sms to
-          `In danger , location : ${this.state.lat},${this.state.long} , time: ${new Date().getTime()}`, // sms body
+          `In danger , location : ${this.state.lat},${this.state.long} , time: ${new Date()}`, // sms body
           "sendDirect", // sendDirect or sendIndirect
           (err, message) => {
             if (err) {
@@ -356,13 +307,11 @@ class PatternScreen extends React.Component {
       console.log(error);
     }
   };
-  onClickPattern = ({ lat, long }) => {
+  onClickPattern = () => {
     if (this.state.click <= this.state.numberOfClick)
       this.setState(
         {
-          click: this.state.click + 1,
-          lat,
-          long
+          click: this.state.click + 1
         },
         () => {
           if (this.state.click === this.state.numberOfClick) {
@@ -374,7 +323,7 @@ class PatternScreen extends React.Component {
   render() {
     return (
       <View style={{ flexGrow: 1, backgroundColor: "white" }}>
-        <Location>
+        <Location setLatLong={({ lat, long }) => this.setState({ lat, long })}>
           {({ lat, long }) => {
             return (
               <View
@@ -541,13 +490,15 @@ class Case1Screen extends React.Component {
       console.log(error);
     }
   };
-  sendMessage = async () => {
+  sendMessage = async ({ lat, long }) => {
+    console.warn(`In danger , location : ${lat},${long} , time: ${new Date()}`);
     try {
       const value = await AsyncStorage.getItem("phoneNumber");
       if (value !== null) {
         SmsAndroid.sms(
           value, // phone number to send sms to
-          "This is the sms text", // sms body
+          `In danger , location : ${lat},${long} , time: ${new Date()}`, // sms body
+
           "sendDirect", // sendDirect or sendIndirect
           (err, message) => {
             if (err) {
@@ -562,7 +513,7 @@ class Case1Screen extends React.Component {
       console.log(error);
     }
   };
-  onClickPattern = text => {
+  onClickPattern = ({ lat, long }) => {
     if (this.state.click <= this.state.numberOfClick)
       this.setState(
         {
@@ -570,7 +521,7 @@ class Case1Screen extends React.Component {
         },
         () => {
           if (this.state.click === this.state.numberOfClick) {
-            this.sendMessage();
+            this.sendMessage({ lat, long });
             this.setState({ click: 0 });
           }
         }
@@ -603,27 +554,30 @@ class Case1Screen extends React.Component {
           <Text style={[material.subheading, { marginBottom: 7, color: "grey" }]}>
             Tab the below button to send alert
           </Text>
+          <Location setLatLong={({ lat, long }) => {}}>
+            {({ lat, long }) => (
+              <TouchableOpacity
+                style={{
+                  width: 100,
+                  height: 100,
+                  borderRadius: 50,
+                  backgroundColor: "black",
+                  justifyContent: "center",
+                  alignItems: "center",
 
-          <TouchableOpacity
-            style={{
-              width: 100,
-              height: 100,
-              borderRadius: 50,
-              backgroundColor: "black",
-              justifyContent: "center",
-              alignItems: "center",
-
-              backgroundColor: "#2ecc71",
-              ...Platform.select({
-                android: {
-                  elevation: 4
-                }
-              })
-            }}
-            onPress={this.onClickPattern}
-          >
-            <Image style={{ width: 50, height: 50 }} source={require("../rescue/assets/images/fingure.png")} />
-          </TouchableOpacity>
+                  backgroundColor: "#2ecc71",
+                  ...Platform.select({
+                    android: {
+                      elevation: 4
+                    }
+                  })
+                }}
+                onPress={() => this.onClickPattern({ lat, long })}
+              >
+                <Image style={{ width: 50, height: 50 }} source={require("../rescue/assets/images/fingure.png")} />
+              </TouchableOpacity>
+            )}
+          </Location>
         </View>
       </View>
     );
