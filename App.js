@@ -7,6 +7,7 @@ import FontAwesome from "react-native-vector-icons/FontAwesome5";
 var Sound = require("react-native-sound");
 var SmsAndroid = require("react-native-sms-android");
 import { material } from "react-native-typography";
+import { Dropdown } from "react-native-material-dropdown";
 
 /**
  * map value
@@ -94,7 +95,7 @@ class HomeScreen extends React.Component {
             marginBottom: 12
           }}
           title="CASE:3"
-          onPress={() => this.props.navigation.navigate("SetPhone")}
+          onPress={() => this.props.navigation.navigate("Case3")}
         />
         <Button
           buttonStyle={{
@@ -583,6 +584,71 @@ class Case1Screen extends React.Component {
     );
   }
 }
+class Case3Screen extends React.Component {
+  static navigationOptions = {
+    title: "Case 3",
+    headerStyle: {
+      backgroundColor: "#6B55AC"
+    },
+    headerTintColor: "#fff",
+    headerTitleStyle: {
+      fontWeight: "bold"
+    }
+  };
+  state = {
+    type: [
+      {
+        value: "Blood Pressure"
+      },
+      {
+        value: "Temperature"
+      }
+    ],
+    value: [
+      {
+        value: "Less than 95.0 F",
+        temp: 95
+      },
+      {
+        value: "greter than 105.0 F",
+        temp: 105
+      }
+    ],
+    selectedTypeIndex: false,
+    selectedValueIndex: false
+  };
+  render() {
+    return (
+      <View
+        style={{
+          flexGrow: 1,
+          backgroundColor: "white"
+        }}
+      >
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center"
+          }}
+        >
+          <Dropdown
+            onChangeText={(value, index, data) => this.setState({ selectedTypeIndex: index })}
+            label="Type"
+            data={this.state.type}
+          />
+          <Dropdown
+            onChangeText={(value, index, data) => this.setState({ selectedValueIndex: index })}
+            label="Value"
+            data={this.state.value}
+          />
+          {typeof this.state.selectedTypeIndex === "number" && typeof this.state.selectedValueIndex === "number" ? (
+            <PatternScreen />
+          ) : null}
+        </View>
+      </View>
+    );
+  }
+}
 
 const RootStack = createStackNavigator(
   {
@@ -603,6 +669,9 @@ const RootStack = createStackNavigator(
     },
     Case1: {
       screen: Case1Screen
+    },
+    Case3: {
+      screen: Case3Screen
     }
   },
   {
