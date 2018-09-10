@@ -286,14 +286,14 @@ class PatternScreen extends React.Component {
 
   sendMessage = async () => {
     console.warn(
-      `In danger , location : ${this.state.lat},${this.state.long} , time: ${new Date()}` // sms body
+      `In danger , location : https://maps.google.com/?q=${this.state.lat},${this.state.long} , time: ${new Date()}` // sms body
     );
     try {
       const value = await AsyncStorage.getItem("phoneNumber");
       if (value !== null) {
         SmsAndroid.sms(
           value, // phone number to send sms to
-          `In danger , location : ${this.state.lat},${this.state.long} , time: ${new Date()}`, // sms body
+          `In danger , location : https://maps.google.com/?q=${this.state.lat},${this.state.long} , time: ${new Date()}`, // sms body
           "sendDirect", // sendDirect or sendIndirect
           (err, message) => {
             if (err) {
@@ -492,13 +492,13 @@ class Case1Screen extends React.Component {
     }
   };
   sendMessage = async ({ lat, long }) => {
-    console.warn(`In danger , location : ${lat},${long} , time: ${new Date()}`);
+    console.warn(`In danger , location : https://maps.google.com/?q=${lat},${long} , time: ${new Date()}`);
     try {
       const value = await AsyncStorage.getItem("phoneNumber");
       if (value !== null) {
         SmsAndroid.sms(
           value, // phone number to send sms to
-          `In danger , location : ${lat},${long} , time: ${new Date()}`, // sms body
+          `In danger , location : https://maps.google.com/?q=${lat},${long} , time: ${new Date()}`, // sms body
 
           "sendDirect", // sendDirect or sendIndirect
           (err, message) => {
