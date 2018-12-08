@@ -1,5 +1,14 @@
 import React from "react";
-import { View, AsyncStorage, Text, TouchableOpacity, Image, Alert, Platform, ToastAndroid } from "react-native";
+import {
+  View,
+  AsyncStorage,
+  Text,
+  TouchableOpacity,
+  Image,
+  Alert,
+  Platform,
+  ToastAndroid
+} from "react-native";
 import { createStackNavigator } from "react-navigation"; // Version can be specified in package.json
 import { Button, Input, Card } from "react-native-elements";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -27,7 +36,10 @@ class Location extends React.Component {
           lat: position.coords.latitude,
           long: position.coords.longitude
         });
-        this.props.setLatLong({ lat: position.coords.latitude, long: position.coords.longitude });
+        this.props.setLatLong({
+          lat: position.coords.latitude,
+          long: position.coords.longitude
+        });
       },
       error => {
         alert(error.message);
@@ -212,7 +224,9 @@ class SetPhoneScreen extends React.Component {
     console.log(AsyncStorage.getItem("phoneNumber"), this.state);
     return (
       <View style={{ flex: 1, backgroundColor: "white" }}>
-        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
           <Input
             value={this.state.phone}
             defaultValue={this.state.phone}
@@ -286,14 +300,18 @@ class PatternScreen extends React.Component {
 
   sendMessage = async () => {
     console.warn(
-      `In danger , location : https://maps.google.com/?q=${this.state.lat},${this.state.long} , time: ${new Date()}` // sms body
+      `In danger , location : https://maps.google.com/?q=${this.state.lat},${
+        this.state.long
+      } , time: ${new Date()}` // sms body
     );
     try {
       const value = await AsyncStorage.getItem("phoneNumber");
       if (value !== null) {
         SmsAndroid.sms(
           value, // phone number to send sms to
-          `In danger , location : https://maps.google.com/?q=${this.state.lat},${this.state.long} , time: ${new Date()}`, // sms body
+          `In danger , location : https://maps.google.com/?q=${
+            this.state.lat
+          },${this.state.long} , time: ${new Date()}`, // sms body
           "sendDirect", // sendDirect or sendIndirect
           (err, message) => {
             if (err) {
@@ -334,11 +352,23 @@ class PatternScreen extends React.Component {
                   alignItems: "center"
                 }}
               >
-                <Text style={{ fontSize: 40, textAlign: "center" }}>Countdown : {this.state.countDown + ""}</Text>
-                <Text style={[material.subheading, { marginBottom: 7, color: "grey" }]}>
+                <Text style={{ fontSize: 40, textAlign: "center" }}>
+                  Countdown : {this.state.countDown + ""}
+                </Text>
+                <Text
+                  style={[
+                    material.subheading,
+                    { marginBottom: 7, color: "grey" }
+                  ]}
+                >
                   {lat} , {long}
                 </Text>
-                <Text style={[material.subheading, { marginBottom: 7, color: "grey" }]}>
+                <Text
+                  style={[
+                    material.subheading,
+                    { marginBottom: 7, color: "grey" }
+                  ]}
+                >
                   Provide your pattern to diactivate
                 </Text>
 
@@ -360,7 +390,10 @@ class PatternScreen extends React.Component {
                   }}
                   onPress={() => this.onClickPattern({ lat, long })}
                 >
-                  <Image style={{ width: 50, height: 50 }} source={require("../rescue/assets/images/fingure.png")} />
+                  <Image
+                    style={{ width: 50, height: 50 }}
+                    source={require("../rescue/assets/images/fingure.png")}
+                  />
                 </TouchableOpacity>
               </View>
             );
@@ -389,22 +422,26 @@ class SetPatternScreen extends React.Component {
     });
   };
   onSave = () => {
-    if (this.state.numberOfClick > 1) {
-      AsyncStorage.setItem("numberOfClick", this.state.numberOfClick + "", () => {
-        Alert.alert(
-          "Success",
-          "Pattern save successfully",
-          [
-            {
-              text: "OK",
-              onPress: () => {
-                this.props.navigation.goBack();
+    if (this.state.numberOfClick > 0) {
+      AsyncStorage.setItem(
+        "numberOfClick",
+        this.state.numberOfClick + "",
+        () => {
+          Alert.alert(
+            "Success",
+            "Pattern save successfully",
+            [
+              {
+                text: "OK",
+                onPress: () => {
+                  this.props.navigation.goBack();
+                }
               }
-            }
-          ],
-          { cancelable: false }
-        );
-      });
+            ],
+            { cancelable: false }
+          );
+        }
+      );
     }
   };
   render() {
@@ -422,10 +459,14 @@ class SetPatternScreen extends React.Component {
             alignItems: "center"
           }}
         >
-          <Text style={[material.display2, { paddingBottom: 10, paddingTop: 10 }]}>
+          <Text
+            style={[material.display2, { paddingBottom: 10, paddingTop: 10 }]}
+          >
             {this.state.numberOfClick + ""}
           </Text>
-          <Text style={[material.subheading, { marginBottom: 7, color: "grey" }]}>
+          <Text
+            style={[material.subheading, { marginBottom: 7, color: "grey" }]}
+          >
             Tab the below button to set pattern
           </Text>
 
@@ -447,9 +488,12 @@ class SetPatternScreen extends React.Component {
             }}
             onPress={this.onSetPattern}
           >
-            <Image style={{ width: 50, height: 50 }} source={require("../rescue/assets/images/fingure.png")} />
+            <Image
+              style={{ width: 50, height: 50 }}
+              source={require("../rescue/assets/images/fingure.png")}
+            />
           </TouchableOpacity>
-          {this.state.numberOfClick > 1 && (
+          {this.state.numberOfClick > 0 && (
             <Button
               onPress={this.onSave}
               title="SAVE"
@@ -492,7 +536,9 @@ class Case1Screen extends React.Component {
     }
   };
   sendMessage = async ({ lat, long }) => {
-    console.warn(`In danger , location : https://maps.google.com/?q=${lat},${long} , time: ${new Date()}`);
+    console.warn(
+      `In danger , location : https://maps.google.com/?q=${lat},${long} , time: ${new Date()}`
+    );
     try {
       const value = await AsyncStorage.getItem("phoneNumber");
       if (value !== null) {
@@ -539,10 +585,22 @@ class Case1Screen extends React.Component {
       >
         <Card title="CASE STATUS">
           <Text style={[material.body2, { textAlign: "center", padding: 10 }]}>
-            <FontAwesome name="user-check" size={20} style={{ padding: 100 }} color="green" /> -> USER AVALIABLE
+            <FontAwesome
+              name="user-check"
+              size={20}
+              style={{ padding: 100 }}
+              color="green"
+            />{" "}
+            -> USER AVALIABLE
           </Text>
           <Text style={[material.body2, { textAlign: "center", padding: 10 }]}>
-            <FontAwesome name="mobile-alt" size={20} style={{ padding: 100 }} color="green" /> -> DEVICE AVALIABLE
+            <FontAwesome
+              name="mobile-alt"
+              size={20}
+              style={{ padding: 100 }}
+              color="green"
+            />{" "}
+            -> DEVICE AVALIABLE
           </Text>
         </Card>
         <View
@@ -552,7 +610,9 @@ class Case1Screen extends React.Component {
             alignItems: "center"
           }}
         >
-          <Text style={[material.subheading, { marginBottom: 7, color: "grey" }]}>
+          <Text
+            style={[material.subheading, { marginBottom: 7, color: "grey" }]}
+          >
             Tab the below button to send alert
           </Text>
           <Location setLatLong={({ lat, long }) => {}}>
@@ -575,7 +635,10 @@ class Case1Screen extends React.Component {
                 }}
                 onPress={() => this.onClickPattern({ lat, long })}
               >
-                <Image style={{ width: 50, height: 50 }} source={require("../rescue/assets/images/fingure.png")} />
+                <Image
+                  style={{ width: 50, height: 50 }}
+                  source={require("../rescue/assets/images/fingure.png")}
+                />
               </TouchableOpacity>
             )}
           </Location>
@@ -604,18 +667,21 @@ class Case3Screen extends React.Component {
         value: "Temperature"
       }
     ],
-    value: [
-      {
-        value: "Less than 95.0 F",
-        temp: 95
-      },
-      {
-        value: "greter than 105.0 F",
-        temp: 105
-      }
-    ],
-    selectedTypeIndex: false,
-    selectedValueIndex: false
+    "Blood Pressure": {
+      value: [
+        {
+          value: "Systolic > 180 mm Hg && Diastolic > 120 mm Hg"
+        }
+      ]
+    },
+    Temperature: {
+      value: [
+        {
+          value: "Less than 95.0 F or greter than 105.0 F"
+        }
+      ]
+    },
+    selectedType: ""
   };
   render() {
     return (
@@ -632,16 +698,29 @@ class Case3Screen extends React.Component {
           }}
         >
           <Dropdown
-            onChangeText={(value, index, data) => this.setState({ selectedTypeIndex: index })}
+            onChangeText={(value, index, data) =>
+              this.setState({ selectedType: value })
+            }
             label="Type"
             data={this.state.type}
           />
           <Dropdown
-            onChangeText={(value, index, data) => this.setState({ selectedValueIndex: index })}
+            onChangeText={(value, index, data) =>
+              this.setState({ selectedValueIndex: index })
+            }
             label="Value"
-            data={this.state.value}
+            data={
+              this.state.selectedType
+                ? this.state[this.state.selectedType].value
+                : []
+            }
           />
-          {typeof this.state.selectedTypeIndex === "number" && typeof this.state.selectedValueIndex === "number" ? (
+          {this.state.selectedType === "Temperature" &&
+          typeof this.state.selectedValueIndex === "number" ? (
+            <PatternScreen />
+          ) : null}
+          {this.state.selectedType === "Blood Pressure" &&
+          typeof this.state.selectedValueIndex === "number" ? (
             <PatternScreen />
           ) : null}
         </View>
